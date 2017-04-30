@@ -3,8 +3,7 @@ var createOrbitViewer = require('three-orbit-viewer')(THREE)
 // single-mesh worm
 var Worm = require('./lib/worm');
 // multi-mesh worm for debugging purpose that likely will make into final build
-// var LongWorm = require('./lib/longWorm');
-var flockerTweaker = require('./lib/flockerTweaker');
+var LongWorm = require('./lib/longWorm');
 var randomColor = require('randomcolor');
 
 const BOUND_SIZE = 50;
@@ -14,20 +13,27 @@ var app = createOrbitViewer({
     clearAlpha: 1,
     fov: 65,
     position: new THREE.Vector3(1, 1, 70),
-    contextAttributes: {
-      preserveDrawingBuffer: true,
-    }
+    // contextAttributes: {
+    //   preserveDrawingBuffer: false,
+    // },
 })
 // app.renderer.autoClear = false;
-setTimeout(()=>{app.renderer.autoClearColor = false;}, 100);
+// setTimeout(()=>{app.renderer.autoClearColor = false;}, 100);
 // app.renderer.autoClearDepth = false;
 // app.renderer.autoClearStencil = false;
+
+// document.addEventListener('mousedown', (e) => {
+//   app.renderer.autoClearColor = true;
+// });
+// document.addEventListener('mouseup', (e) => {
+//   app.renderer.autoClearColor = false;
+// });
 
 var arrWorm = [];
 // TODO get this from recording
 var audioBuffer = [];
-for (var i = 0; i < 3; i++) {
-  var worm = new Worm(
+for (var i = 0; i < 20; i++) {
+  var worm = new LongWorm(
     audioBuffer, 
     (Math.random() - .5) * BOUND_SIZE, 
     (Math.random() - .5) * BOUND_SIZE, 
@@ -49,14 +55,7 @@ app.on('tick', function(dt) {
     arrWorm.forEach((worm)=>{
       // TODO move these into worm class's update
       worm.wander();
-      worm.bounce(BOUND_SIZE, BOUND_SIZE, BOUND_SIZE);
+      worm.bounce(BOUND_SIZE * 2, BOUND_SIZE * 2, BOUND_SIZE * 2);
       worm.update();
     });
 })
-
-document.addEventListener('mousedown', (e) => {
-  app.renderer.autoClearColor = true;
-});
-document.addEventListener('mouseup', (e) => {
-  app.renderer.autoClearColor = false;
-});
