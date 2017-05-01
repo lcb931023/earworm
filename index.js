@@ -12,27 +12,27 @@ var app = createOrbitViewer({
     clearColor: 0x000000,
     clearAlpha: 1,
     fov: 65,
-    position: new THREE.Vector3(1, 1, 70),
-    // contextAttributes: {
-    //   preserveDrawingBuffer: false,
-    // },
+    position: new THREE.Vector3(0, 0, 70),
+    contextAttributes: {
+      preserveDrawingBuffer: true,
+    },
 })
-// app.renderer.autoClear = false;
-// setTimeout(()=>{app.renderer.autoClearColor = false;}, 100);
-// app.renderer.autoClearDepth = false;
-// app.renderer.autoClearStencil = false;
+app.renderer.autoClear = false;
+setTimeout(()=>{app.renderer.autoClearColor = false;}, 100);
+app.renderer.autoClearDepth = false;
+app.renderer.autoClearStencil = false;
 
-// document.addEventListener('mousedown', (e) => {
-//   app.renderer.autoClearColor = true;
-// });
-// document.addEventListener('mouseup', (e) => {
-//   app.renderer.autoClearColor = false;
-// });
+document.addEventListener('mousedown', (e) => {
+  app.renderer.autoClearColor = true;
+});
+document.addEventListener('mouseup', (e) => {
+  app.renderer.autoClearColor = false;
+});
 
 var arrWorm = [];
 // TODO get this from recording
 var audioBuffer = [];
-for (var i = 0; i < 20; i++) {
+for (var i = 0; i < 5; i++) {
   var worm = new LongWorm(
     audioBuffer, 
     (Math.random() - .5) * BOUND_SIZE, 
@@ -40,22 +40,37 @@ for (var i = 0; i < 20; i++) {
     (Math.random() - .5) * BOUND_SIZE,
   );
   worm.scale.set(0.5,0.5,0.5);
-  worm.setColor(randomColor({luminosity: 'bright'}));
+  worm.setColor(randomColor({
+    hue: 'monochrome',
+    luminosity: 'bright',
+  }));
   app.scene.add(worm);
   arrWorm.push(worm);
 }
 
-app.scene.add(new THREE.Mesh(
-  new THREE.BoxGeometry(BOUND_SIZE, BOUND_SIZE, BOUND_SIZE),
-  new THREE.MeshBasicMaterial({ wireframe: true, color: 0xffffff })
-));
+// TODO remove reference box
+// app.scene.add(new THREE.Mesh(
+//   new THREE.BoxGeometry(BOUND_SIZE, BOUND_SIZE, BOUND_SIZE),
+//   new THREE.MeshBasicMaterial({ wireframe: true, color: 0xffffff })
+// ));
 
+let rot = 0;
 app.on('tick', function(dt) {
-    //.. handle pre-render updates    
-    arrWorm.forEach((worm)=>{
-      // TODO move these into worm class's update
-      worm.wander();
-      worm.bounce(BOUND_SIZE * 2, BOUND_SIZE * 2, BOUND_SIZE * 2);
-      worm.update();
-    });
+  //.. handle pre-render updates    
+  arrWorm.forEach((worm)=>{
+    // TODO move these into worm class's update
+    worm.wander();
+    worm.bounce(BOUND_SIZE * 2, BOUND_SIZE * 2, BOUND_SIZE * 2);
+    worm.update();
+  });
+  
+  // slowly move camera around center
+  rot += dt / 1000;
+  var rotten = new THREE.Vector3(0, 0, 70);
+  rotten.applyAxisAngle(
+    new THREE.Vector3(0, 1, 0), 
+    rot / 0.4,
+  );
+  app.camera.position.copy(rotten);
+  app.camera.lookAt(new THREE.Vector3());
 })
