@@ -1,54 +1,58 @@
 global.THREE = require('three');
 var createOrbitViewer = require('three-orbit-viewer')(THREE)
+var randomColor = require('randomcolor');
+var Recorder = require('./lib/recorder');
 // single-mesh worm
 var Worm = require('./lib/worm');
 // multi-mesh worm for debugging purpose that likely will make into final build
 var LongWorm = require('./lib/longWorm');
-var randomColor = require('randomcolor');
 
 const BOUND_SIZE = 50;
+const WORM_SCALE = 0.5;
+const RECORDING_DURATION = 3;
 
 var app = createOrbitViewer({
     clearColor: 0x000000,
     clearAlpha: 1,
     fov: 65,
-    position: new THREE.Vector3(1, 1, 70),
-    // contextAttributes: {
-    //   preserveDrawingBuffer: false,
-    // },
+    position: new THREE.Vector3(0, 0, 70),
 })
-// app.renderer.autoClear = false;
-// setTimeout(()=>{app.renderer.autoClearColor = false;}, 100);
-// app.renderer.autoClearDepth = false;
-// app.renderer.autoClearStencil = false;
-
-// document.addEventListener('mousedown', (e) => {
-//   app.renderer.autoClearColor = true;
-// });
-// document.addEventListener('mouseup', (e) => {
-//   app.renderer.autoClearColor = false;
-// });
-
-var arrWorm = [];
-// TODO get this from recording
-var audioBuffer = [];
-for (var i = 0; i < 20; i++) {
-  var worm = new LongWorm(
-    audioBuffer, 
-    (Math.random() - .5) * BOUND_SIZE, 
-    (Math.random() - .5) * BOUND_SIZE, 
-    (Math.random() - .5) * BOUND_SIZE,
-  );
-  worm.scale.set(0.5,0.5,0.5);
-  worm.setColor(randomColor({luminosity: 'bright'}));
-  app.scene.add(worm);
-  arrWorm.push(worm);
-}
 
 app.scene.add(new THREE.Mesh(
   new THREE.BoxGeometry(BOUND_SIZE, BOUND_SIZE, BOUND_SIZE),
   new THREE.MeshBasicMaterial({ wireframe: true, color: 0xffffff })
 ));
+
+var arrWorm = [];
+
+var recorder = new Recorder(RECORDING_DURATION, onRecordEnd);
+function onRecordEnd(rec) {
+  // Generate a worm that keeps track of the recording
+  var worm = new LongWorm(
+    rec.exportBuffer(),
+    (Math.random() - .5) * BOUND_SIZE, 
+    (Math.random() - .5) * BOUND_SIZE, 
+    (Math.random() - .5) * BOUND_SIZE,
+  );
+  worm.scale.set(WORM_SCALE, WORM_SCALE, WORM_SCALE);
+  worm.setColor(randomColor({luminosity: 'light'}));
+  app.scene.add(worm);
+  arrWorm.push(worm);
+};
+document.addEventListener('keydown', (e) => {
+  if (e.key !== ' ') return;
+  console.log('start recording');
+  if(recorder.isRecording === false) {
+    recorder.start();
+  }
+});
+document.addEventListener('keyup', (e) => {
+  if (e.key !== ' ') return;
+  console.log('stop recording');
+  if(recorder.isRecording === true) {
+    recorder.stop();
+  }
+});
 
 app.on('tick', function(dt) {
     //.. handle pre-render updates    
