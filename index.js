@@ -2,9 +2,6 @@ global.THREE = require('three');
 var createOrbitViewer = require('three-orbit-viewer')(THREE)
 var randomColor = require('randomcolor');
 var Recorder = require('./lib/recorder');
-// single-mesh worm
-var Worm = require('./lib/worm');
-// multi-mesh worm for debugging purpose that likely will make into final build
 var LongWorm = require('./lib/longWorm');
 
 let BOUND_SIZE = 20;
@@ -12,20 +9,16 @@ const WORM_SCALE = 0.5;
 const RECORDING_DURATION = 1;
 const INTIMATE_DIST = 10;
 
-var app = createOrbitViewer({
-  clearColor: 0x000000,
-  clearAlpha: 1,
-  fov: 65,
-  position: new THREE.Vector3(0, 0, 70),
-})
-
-app.scene.add(new THREE.Mesh(
-  new THREE.BoxGeometry(BOUND_SIZE, BOUND_SIZE, BOUND_SIZE),
-  new THREE.MeshBasicMaterial({ wireframe: true, color: 0xffffff })
-));
-
 var arrWorm = [];
 
+/* UI */
+var btnStart = document.querySelector('.btn-start');
+var elLanding = document.querySelector('.landing');
+btnStart.addEventListener('click', ()=>{
+  elLanding.classList.add('hide');
+});
+
+var btnRecord = document.querySelector('.btn-record');
 var recorder = new Recorder(RECORDING_DURATION, onRecordEnd);
 function onRecordEnd(rec) {
   // Generate a worm that keeps track of the recording
@@ -40,21 +33,31 @@ function onRecordEnd(rec) {
   worm.setColor(randomColor({luminosity: 'light'}));
   app.scene.add(worm);
   arrWorm.push(worm);
+  
+  btnRecord.innerText = `done!`;
+  setTimeout(()=>{ btnRecord.innerText = 'record' }, 500);
 };
-document.addEventListener('keydown', (e) => {
-  if (e.key !== ' ') return;
-  console.log('start recording');
+btnRecord.addEventListener('click', (e) => {
   if(recorder.isRecording === false) {
     recorder.start();
-  }
-});
-document.addEventListener('keyup', (e) => {
-  if (e.key !== ' ') return;
-  console.log('stop recording');
-  if(recorder.isRecording === true) {
+    btnRecord.innerText = `recording audio that is ${RECORDING_DURATION} seconds long...`;
+  } else {
     recorder.stop();
   }
 });
+
+/* Scene */
+var app = createOrbitViewer({
+  clearColor: 0x000000,
+  clearAlpha: 1,
+  fov: 65,
+  position: new THREE.Vector3(0, 0, 70),
+})
+
+app.scene.add(new THREE.Mesh(
+  new THREE.BoxGeometry(BOUND_SIZE, BOUND_SIZE, BOUND_SIZE),
+  new THREE.MeshBasicMaterial({ wireframe: true, color: 0xffffff })
+));
 
 app.on('tick', function(dt) {
   //.. handle pre-render updates    
