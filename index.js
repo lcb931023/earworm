@@ -1,8 +1,9 @@
 global.THREE = require('three');
-var createOrbitViewer = require('three-orbit-viewer')(THREE)
-var randomColor = require('randomcolor');
-var Recorder = require('./lib/recorder');
-var LongWorm = require('./lib/longWorm');
+const TWEEN = require('tween.js');
+const createOrbitViewer = require('three-orbit-viewer')(THREE)
+const randomColor = require('randomcolor');
+const Recorder = require('./lib/recorder');
+const LongWorm = require('./lib/longWorm');
 
 let BOUND_SIZE = 20;
 const WORM_SCALE = 0.5;
@@ -12,14 +13,14 @@ const INTIMATE_DIST = 10;
 var arrWorm = [];
 
 /* UI */
-var btnStart = document.querySelector('.btn-start');
-var elLanding = document.querySelector('.landing');
+const btnStart = document.querySelector('.btn-start');
+const elLanding = document.querySelector('.landing');
 btnStart.addEventListener('click', ()=>{
   elLanding.classList.add('hide');
 });
 
-var btnRecord = document.querySelector('.btn-record');
-var recorder = new Recorder(RECORDING_DURATION, onRecordEnd);
+const btnRecord = document.querySelector('.btn-record');
+const recorder = new Recorder(RECORDING_DURATION, onRecordEnd);
 function onRecordEnd(rec) {
   // Generate a worm that keeps track of the recording
   var worm = new LongWorm(
@@ -61,6 +62,7 @@ app.scene.add(new THREE.Mesh(
 
 app.on('tick', function(dt) {
   //.. handle pre-render updates    
+  TWEEN.update();
   arrWorm.forEach((worm)=>{
     // TODO move these into worm class's update
     worm.wander();

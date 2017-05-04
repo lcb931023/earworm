@@ -26,6 +26,7 @@
     "randomcolor": "^0.5.0",
     "three": "^0.85.2",
     "three-orbit-viewer": "^69.3.1",
-    "tone": "^0.10.0"
+    "tone": "^0.10.0",
+    "tween.js": "^16.6.0"
   }
 }
