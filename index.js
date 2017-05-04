@@ -20,6 +20,7 @@ btnStart.addEventListener('click', ()=>{
 });
 
 const btnRecord = document.querySelector('.btn-record');
+const btnRecordText = btnRecord.innerText;
 const recorder = new Recorder(RECORDING_DURATION, onRecordEnd);
 function onRecordEnd(rec) {
   // Generate a worm that keeps track of the recording
@@ -35,7 +36,7 @@ function onRecordEnd(rec) {
   app.scene.add(worm);
   arrWorm.push(worm);
   
-  btnRecord.innerText = 'press me to record';
+  btnRecord.innerText = btnRecordText;
 };
 btnRecord.addEventListener('click', (e) => {
   if(recorder.isRecording === false) {
