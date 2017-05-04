@@ -5,7 +5,9 @@ const randomColor = require('randomcolor');
 const Recorder = require('./lib/recorder');
 const LongWorm = require('./lib/longWorm');
 
-let BOUND_SIZE = 20;
+const BOUND_MIN = 10;
+const BOUND_MAX = 50;
+let boundSize = BOUND_MIN;
 const WORM_SCALE = 0.5;
 const RECORDING_DURATION = 1;
 const INTIMATE_DIST = 10;
@@ -23,13 +25,16 @@ const btnRecord = document.querySelector('.btn-record');
 const btnRecordText = btnRecord.innerText;
 const recorder = new Recorder(RECORDING_DURATION, onRecordEnd);
 function onRecordEnd(rec) {
+  // Expand bound to give worm free space
+  boundSize = BOUND_MIN + (arrWorm.length + 1) / BOUND_MAX * (BOUND_MAX - BOUND_MIN);
+  if (boundSize > BOUND_MAX) boundSize = BOUND_MAX;
   // Generate a worm that keeps track of the recording
   var worm = new LongWorm(
     rec.exportBuffer(),
     RECORDING_DURATION,
-    (Math.random() - .5) * BOUND_SIZE, 
-    (Math.random() - .5) * BOUND_SIZE, 
-    (Math.random() - .5) * BOUND_SIZE,
+    (Math.random() - .5) * boundSize, 
+    (Math.random() - .5) * boundSize, 
+    (Math.random() - .5) * boundSize,
   );
   worm.scale.set(WORM_SCALE, WORM_SCALE, WORM_SCALE);
   worm.setColor(randomColor({luminosity: 'dark'}));
@@ -52,13 +57,8 @@ var app = createOrbitViewer({
   clearColor: 0x000000,
   clearAlpha: 1,
   fov: 65,
-  position: new THREE.Vector3(0, 0, 70),
+  position: new THREE.Vector3(0, 0, 50), // camera
 })
-
-app.scene.add(new THREE.Mesh(
-  new THREE.BoxGeometry(BOUND_SIZE, BOUND_SIZE, BOUND_SIZE),
-  new THREE.MeshBasicMaterial({ wireframe: true, color: 0xffffff })
-));
 
 app.on('tick', function(dt) {
   //.. handle pre-render updates    
@@ -66,7 +66,7 @@ app.on('tick', function(dt) {
   arrWorm.forEach((worm)=>{
     // TODO move these into worm class's update
     worm.wander();
-    worm.bounce(BOUND_SIZE);
+    worm.bounce(boundSize);
     worm.update();
   });
 })
