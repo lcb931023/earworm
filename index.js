@@ -31,17 +31,16 @@ function onRecordEnd(rec) {
     (Math.random() - .5) * BOUND_SIZE,
   );
   worm.scale.set(WORM_SCALE, WORM_SCALE, WORM_SCALE);
-  worm.setColor(randomColor({luminosity: 'light'}));
+  worm.setColor(randomColor({luminosity: 'dark'}));
   app.scene.add(worm);
   arrWorm.push(worm);
   
-  btnRecord.innerText = `done!`;
-  setTimeout(()=>{ btnRecord.innerText = 'record' }, 500);
+  btnRecord.innerText = 'press me to record';
 };
 btnRecord.addEventListener('click', (e) => {
   if(recorder.isRecording === false) {
     recorder.start();
-    btnRecord.innerText = `recording audio that is ${RECORDING_DURATION} seconds long...`;
+    btnRecord.innerText = `recording ${RECORDING_DURATION} seconds of audio...`;
   } else {
     recorder.stop();
   }

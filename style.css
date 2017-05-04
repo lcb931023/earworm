@@ -2,8 +2,8 @@ body {
   font-family: 'Noto Sans', sans-serif;
   color: white;
   background: black;
+  text-transform: uppercase;
 }
-
 .landing {
   position: fixed;
   width: 100vw;
@@ -21,12 +21,17 @@ body {
 .title {
   text-align: center;
 }
+.version {
+  font-size: 0.5em;
+}
 .subtitle {
   text-align: center;
 }
 .btn-start {
   text-align: center;
   cursor: pointer;
+  width: 10em;
+  margin: 0 auto;
 }
 
 .recorder {
@@ -37,7 +42,7 @@ body {
 }
 .btn-record {
   text-align: center;
-  width: 10em;
+  width: 20em;
   margin: 0 auto;
   cursor: pointer;
 }
