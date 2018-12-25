@@ -18,6 +18,7 @@ var arrWorm = [];
 const btnStart = document.querySelector('.btn-start');
 const elLanding = document.querySelector('.landing');
 btnStart.addEventListener('click', ()=>{
+  Recorder.resumeAudioContext()
   elLanding.classList.add('hide');
 });
 
